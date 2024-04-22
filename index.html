@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/main.css">
+    <title>Inscribed Ultimatum Regex</title>
+</head>
+<body>
+    <h1>Inscribed Ultimatum Regex Generator</h1>
+    <h4 style="color: coral; margin: 0 36px 0 36px">This tool is intended to generate regular
+        expressions for searching for inscribed ultimatums in Path of Exile to help facilitate bulk buying and selling
+        of inscribed ultimatums. Select any desired challenge type, sacrifice type, or undesired modifiers and press
+        generate to create the regex search string.
+    </h4>
+
+    <div style="background-color: #22262e; height: 60px; padding: 0 0 0 12px; margin-top: 8px; align-content: center">
+        <h3 style="width: 75%; float: left; " id="output-regex">
+            Output Regex: </h3>
+        <button class="copy-button" onclick="regexToClipboard()">
+            Copy to Clipboard
+        </button>
+        <button class="reset-all-button" onclick="resetAll()">
+            Reset All
+        </button>
+    </div>
+    <h4 style="margin: 12px 36px 0 36px; text-align: center" id="clipboard-notification">
+        
+    </h4>
+
+    <h2>Any Desired Challenges</h2>
+    <div class="row" id="desired-challenge-block">
+        <button style="height: 42px; text-align: center; font-size: 24px" class="toggle-button-challenges" onclick="toggleChallengeButton(this, 'wav')">
+        Defeat Waves of Enemies</button>
+        <button style="height: 42px; text-align: center; font-size: 24px" class="toggle-button-challenges" onclick="toggleChallengeButton(this, 'ltar')">
+        Protect the Altar</button>
+        <button style="height: 42px; text-align: center; font-size: 24px" class="toggle-button-challenges" onclick="toggleChallengeButton(this, 'e ci')">
+        Stand in the Stone Circles</button>
+        <button style="height: 42px; text-align: center; font-size: 24px" class="toggle-button-challenges" onclick="toggleChallengeButton(this, 'survive')">
+        Survive</button>
+        <button class="reset-button" onclick="resetChallengeBlock()" style="text-align: center; color: coral;">
+        Reset Challenges</button>
+    </div>
+    <h5 style="text-align: center">
+        Note: If no challenges are selected, all challenges will be included, else the search will be exclusive of non-selected challenges.
+    </h5>
+
+    <h2>Any Desired Rewards</h2>
+    <div id="reward-block">
+        <div id="divine" style="margin-bottom: 2px; display: flex; flex-direction: row; justify-content: flex-start">
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsButton(this)" data-amount="1">
+            Divine Orb X1</button>
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsButton(this)" data-amount="4">
+            Divine Orb X4</button>
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsButton(this)" data-amount="8">
+            Divine Orb X8</button>
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsRowButton(this)" data-amount="-1">
+            Any Divine Orb</button>
+        </div>
+
+        <div id="exalted" style="margin-bottom: 2px; display: flex; flex-direction: row; justify-content: flex-start">
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsButton(this)" data-amount="1">
+                Exalted Orb X1</button>
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsButton(this)" data-amount="4">
+                Exalted Orb X4</button>
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsButton(this)" data-amount="8">
+                Exalted Orb X8</button>
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsRowButton(this)" data-amount="-1">
+                Any Exalted Orb</button>
+        </div>
+
+        <div id="chaos" style="margin-bottom: 2px; display: flex; flex-direction: row; justify-content: flex-start">
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsButton(this)" data-amount="5">
+                Chaos Orb X5</button>
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsButton(this)" data-amount="1">
+                Chaos Orb X10</button>
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsButton(this)" data-amount="2">
+                Chaos Orb X20</button>
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsRowButton(this)" data-amount="-1">
+                Any Chaos Orb</button>
+        </div>
+
+        <div id="gcp" style="margin-bottom: 2px; display: flex; flex-direction: row; justify-content: flex-start">
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsButton(this)" data-amount="5">
+                Gemcutter's Prism X5</button>
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsButton(this)" data-amount="1">
+                Gemcutter's Prism X10</button>
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsButton(this)" data-amount="2">
+                Gemcutter's Prism X20</button>
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsRowButton(this)" data-amount="-1">
+                Any Gemcutter's Prism</button>
+        </div>
+
+        <div id="vaal" style="margin-bottom: 2px; display: flex; flex-direction: row; justify-content: flex-start">
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsButton(this)" data-amount="5">
+                Vaal Orb X5</button>
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsButton(this)" data-amount="1">
+                Vaal Orb X10</button>
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsButton(this)" data-amount="2">
+                Vaal Orb X20</button>
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsRowButton(this)" data-amount="-1">
+                Any Vaal Orb</button>
+        </div>
+
+        <div id="ancient" style="margin-bottom: 2px; display: flex; flex-direction: row; justify-content: flex-start">
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsButton(this)" data-amount="1">
+                Ancient Orb X1</button>
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsButton(this)" data-amount="2">
+                Ancient Orb X2</button>
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsButton(this)" data-amount="4">
+                Ancient Orb X4</button>
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsRowButton(this)" data-amount="-1">
+                Any Ancient Orb</button>
+        </div>
+
+        <div id="annul" style="margin-bottom: 2px; display: flex; flex-direction: row; justify-content: flex-start">
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsButton(this)" data-amount="1">
+                Orb of Annulment X1</button>
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsButton(this)" data-amount="4">
+                Orb of Annulment X4</button>
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsButton(this)" data-amount="8">
+                Orb of Annulment X8</button>
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsRowButton(this)" data-amount="-1">
+                Any Orb of Annulment</button>
+        </div>
+
+        <div id="unmaking" style="margin-bottom: 2px; display: flex; flex-direction: row; justify-content: flex-start">
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsButton(this)" data-amount="3">
+                Orb of Unmaking X1</button>
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsButton(this)" data-amount="1">
+                Orb of Unmaking X4</button>
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsButton(this)" data-amount="2">
+                Orb of Unmaking X8</button>
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsRowButton(this)" data-amount="-1">
+                Any Orb of Unmaking</button>
+        </div>
+
+        <div id="fusing" style="margin-bottom: 2px; display: flex; flex-direction: row; justify-content: flex-start">
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsButton(this)" data-amount="1">
+                Orb of Fusing X10</button>
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsButton(this)" data-amount="2">
+                Orb of Fusing X20</button>
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsRowButton(this)" data-amount="-1">
+                Any Orb of Fusing</button>
+        </div>
+
+        <div id="regret" style="margin-bottom: 2px; display: flex; flex-direction: row; justify-content: flex-start">
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsButton(this)" data-amount="2">
+                Orb of Regret X20</button>
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsButton(this)" data-amount="4">
+                Orb of Regret X40</button>
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsRowButton(this)" data-amount="-1">
+                Any Orb of Regret</button>
+        </div>
+
+        <div id="regal" style="margin-bottom: 2px; display: flex; flex-direction: row; justify-content: flex-start">
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsButton(this)" data-amount="5">
+                Regal Orb X5</button>
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsButton(this)" data-amount="1">
+                Regal Orb X10</button>
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsRowButton(this)">
+                Any Regal Orb</button>
+        </div>
+
+        <div id="stacked" style="margin-bottom: 2px; display: flex; flex-direction: row; justify-content: flex-start">
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsButton(this)" data-amount="5">
+                Stacked Deck X5</button>
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsButton(this)" data-amount="1">
+                Stacked Deck X10</button>
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsRowButton(this)" data-amount="-1">
+                Any Stacked Deck</button>
+        </div>
+
+        <div id="blessed" style="margin-bottom: 2px; display: flex; flex-direction: row; justify-content: flex-start">
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsButton(this)" data-amount="1">
+                Blessed Orb X10</button>
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsButton(this)" data-amount="2">
+                Blessed Orb X20</button>
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsRowButton(this)" data-amount="-1">
+                Any Blessed Orb</button>
+        </div>
+
+        <div id="scour" style="margin-bottom: 2px; display: flex; flex-direction: row; justify-content: flex-start">
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsButton(this)" data-amount="1">
+                Orb of Scouring X15</button>
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsButton(this)" data-amount="3">
+                Orb of Scouring X30</button>
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsRowButton(this)" data-amount="-1">
+                Any Orb of Scouring</button>
+        </div>
+
+        <div id="chisel" style="margin-bottom: 2px; display: flex; flex-direction: row; justify-content: flex-start">
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsButton(this)" data-amount="1">
+                Cartographer's Chisel X10</button>
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsButton(this)" data-amount="2">
+                Cartographer's Chisel X20</button>
+            <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsRowButton(this)" data-amount="-1">
+                Any Cartographer's Chisel</button>
+        </div>
+
+        <div id="harbinger" style="margin-bottom: 2px; display: flex; flex-direction: row; justify-content: flex-start">
+                <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsButton(this)" data-amount="3">
+                Harbinger's Orb X3</button>
+        </div>
+        <div id="horizons" style="margin-bottom: 2px; display: flex; flex-direction: row; justify-content: flex-start">
+                <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsButton(this)" data-amount="1">
+                Orb of Horizons X10</button>
+        </div>
+        <div id="sacred" style="margin-bottom: 2px; display: flex; flex-direction: row; justify-content: flex-start">
+                <button style="height: 42px; width: 24.5%;" class="toggle-button-rewards" onclick="toggleRewardsButton(this)" data-amount="1">
+                Sacred Orb X1</button>
+        </div>
+        <button class="reset-button" onclick="resetRewardsBlock()" style="height: 42px; width: 24.5%; text-align: center; color: coral;">
+        Reset Rewards</button>
+    </div>
+    <h5 style="text-align: center">
+        Note: If no rewards are selected, all rewards will be included, else the search will be exclusive of non-selected rewards.
+    </h5>
+
+    <script data-name="BMC-Widget" data-cfasync="false" src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" data-id="liamdwane" data-description="Support me on Buy me a coffee!" data-color="#FF5F5F" data-position="Right" data-x_margin="18" data-y_margin="18"></script>
+
+    <h2>All Modifiers to Avoid</h2>
+    <div class="row" id="modifier-button-block" style="display: flex; flex-direction: row">
+        <div class="column" id="mod-column-1" style="width: 33%">
+            <button class="toggle-button-mods" onclick="toggleModButton(this, '^ai')">
+                <img src="static/images/Ailment_and_Curse_Reflection.png" alt="Ailment and Curse Reflection" height="38px" width="38px">
+                Ailment and Curse Reflection</button>
+            <button class="toggle-button-mods" onclick="toggleModButton(this, '^bl')">
+                <img src="static/images/Blistering_Cold.png" alt="Blistering Cold" height="38px" width="38px">
+                Blistering Cold</button>
+            <button class="toggle-button-mods" onclick="toggleModButton(this, '^bu')">
+                <img src="static/images/Buffs_Expire_Faster.png" alt="Buffs Expire Faster" height="38px" width="38px">
+                Buffs Expire Faster</button>
+            <button class="toggle-button-mods" onclick="toggleModButton(this, 'g mi')">
+                <img src="static/images/Choking_Miasma.png" alt="Choking Miasma" height="38px" width="38px">
+                Choking Miasma</button>
+            <button class="toggle-button-mods" onclick="toggleModButton(this, '^dea')">
+                <img src="static/images/Deadly_Monsters.png" alt="Deadly Monsters" height="38px" width="38px">
+                Deadly Monsters</button>
+            <button class="toggle-button-mods" onclick="toggleModButton(this, '^dex')">
+                <img src="static/images/Dexterous_Monsters.png" alt="Dexterous Monsters" height="38px" width="38px">
+                Dexterous Monsters</button>
+            <button class="toggle-button-mods" onclick="toggleModButton(this, '^dr')">
+                <img src="static/images/Limited_Flasks.png" alt="Drought" height="38px" width="38px">
+                Drought</button>
+            <button class="toggle-button-mods" onclick="toggleModButton(this, '^e.*g')">
+                <img src="static/images/Escalating_Damage_Taken.png" alt="Escalating Damage Taken" height="38px" width="38px">
+                Escalating Damage Taken</button>
+            <button class="toggle-button-mods" onclick="toggleModButton(this, '^e.*p')">
+                <img src="static/images/Escalating_Monster_Speed.png" alt="Escalating Monster Speed" height="38px" width="38px">
+                Escalating Monster Speed</button>
+            <button class="toggle-button-mods" onclick="toggleModButton(this, '^h')">
+                <img src="static/images/Hindering_Flasks.png" alt="Hindering Flasks" height="38px" width="38px">
+                Hindering Flasks</button>
+            <button class="toggle-button-mods" onclick="toggleModButton(this, '^l.*y')">
+                <img src="static/images/Less_Cooldown_recovery.png" alt="Less Cooldown Recovery" height="38px" width="38px">
+                Less Cooldown Recovery</button>
+            <button class="toggle-button-mods" onclick="toggleModButton(this, '^l.*ch')">
+                <img src="static/images/Lessened_Reach.png" alt="Lessened Reach" height="38px" width="38px">
+                Lessened Reach</button>
+        </div>
+        <div class="column" id="mod-column-2" style="width: 33%">
+            <button class="toggle-button-mods" onclick="toggleModButton(this, '^let')">
+                <img src="static/images/Lethal_Rare_Monsters.png" alt="Lethal Rare Monsters" height="38px" width="38px">
+                Lethal Rare Monsters</button>
+            <button class="toggle-button-mods" onclick="toggleModButton(this, '^li')">
+                <img src="static/images/Lightning_Damage_from_Mana_Costs.png" alt="Lightning Damage from Mana Costs" height="38px" width="38px">
+                Lightning Damage from Mana Costs</button>
+            <button class="toggle-button-mods" onclick="toggleModButton(this, '^oc')">
+                <img src="static/images/Occasional_Impotence.png" alt="Occasional Impotence" height="38px" width="38px">
+                Occasional Impotence</button>
+            <button class="toggle-button-mods" onclick="toggleModButton(this, '^ov')">
+                <img src="static/images/Overwhelming_Monsters.png" alt="Overwhelming Monsters" height="38px" width="38px">
+                Overwhelming Monsters</button>
+            <button class="toggle-button-mods" onclick="toggleModButton(this, '^pre')">
+                <img src="static/images/Precise_Monsters.png" alt="Precise Monsters" height="38px" width="38px">
+                Precise Monsters</button>
+            <button class="toggle-button-mods" onclick="toggleModButton(this, '^pri')">
+                <img src="static/images/Prismatic_Monsters.png" alt="Prismatic Monsters" height="38px" width="38px">
+                Prismatic Monsters</button>
+            <button class="toggle-button-mods" onclick="toggleModButton(this, '^pro')">
+                <img src="static/images/Bonus_Chaos_Damage.png" alt="Profane Monsters" height="38px" width="38px">
+                Profane Monsters</button>
+            <button class="toggle-button-mods" onclick="toggleModButton(this, '^rag')">
+                <img src="static/images/Raging_Dead.png" alt="Raging Dead" height="38px" width="38px">
+                Raging Dead</button>
+            <button class="toggle-button-mods" onclick="toggleModButton(this, '^raz')">
+                <img src="static/images/Razor_Dance.png" alt="Razor Dance" height="38px" width="38px">
+                Razor Dance</button>
+            <button class="toggle-button-mods" onclick="toggleModButton(this, '^red')">
+                <img src="static/images/Reduced_Recovery.png" alt="Reduced Recovery" height="38px" width="38px">
+                Reduced Recovery</button>
+            <button class="toggle-button-mods" onclick="toggleModButton(this, '^res')">
+                <img src="static/images/Resistant_Monsters.png" alt="Resistant Monsters" height="38px" width="38px">
+                Resistant Monsters</button>
+            <button class="toggle-button-mods" onclick="toggleModButton(this, 'ru')">
+                <img src="static/images/Ruin.png" alt="Ruin" height="38px" width="38px">
+                Ruin</button>
+        </div>
+        <div class="column" id="mod-column-3" style="width: 33%">
+            <button class="toggle-button-mods" onclick="toggleModButton(this, '^sh')">
+                <img src="static/images/Shielding_Monsters.png" alt="Shielding Monsters" height="38px" width="38px">
+                Shielding Monsters</button>
+            <button class="toggle-button-mods" onclick="toggleModButton(this, '^s.*c')">
+                <img src="static/images/Siphoned_Charges.png" alt="Siphoned Charges" height="38px" width="38px">
+                Siphoned Charges</button>
+            <button class="toggle-button-mods" onclick="toggleModButton(this, 'honi')">
+                <img src="static/images/Siphoning_Monsters.png" alt="Siphoning Monsters" height="38px" width="38px">
+                Siphoning Monsters</button>
+            <button class="toggle-button-mods" onclick="toggleModButton(this, '^sta')">
+                <img src="static/images/Stalking_Ruin.png" alt="Stalking Ruin" height="38px" width="38px">
+                Stalking Ruin</button>
+            <button class="toggle-button-mods" onclick="toggleModButton(this, '^sto')">
+                <img src="static/images/Stormcaller_Runes.png" alt="Stormcaller Runes" height="38px" width="38px">
+                Stormcaller Runes</button>
+            <button class="toggle-button-mods" onclick="toggleModButton(this, 'y po')">
+                <img src="static/images/Totem_of_Costly_Might.png" alt="Totem of Costly Might" height="38px" width="38px">
+                Totem of Costly Might</button>
+            <button class="toggle-button-mods" onclick="toggleModButton(this, 'ly mi')">
+                <img src="static/images/Totem_of_Costly_Potency.png" alt="Totem of Costly Potency" height="38px" width="38px">
+                Totem of Costly Potency</button>
+            <button class="toggle-button-mods" onclick="toggleModButton(this, '^tr')">
+                <img src="static/images/Treacherous_Auras.png" alt="Treacherous Auras" height="38px" width="38px">
+                Treacherous Auras</button>
+            <button class="toggle-button-mods" onclick="toggleModButton(this, '^unl')">
+                <img src="static/images/Unlucky_Criticals.png" alt="Unlucky Criticals" height="38px" width="38px">
+                Unlucky Criticals</button>
+            <button class="toggle-button-mods" onclick="toggleModButton(this, '^uns')">
+                <img src="static/images/Unstoppable_Monsters.png" alt="Unstoppable Monsters" height="38px" width="38px">
+                Unstoppable Monsters</button>
+            <button class="reset-button" onclick="resetModifierBlock()" style="text-align: center; color: coral">
+                    Reset Modifiers</button>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p style="text-align: center; color: #f5f6fa"><a href="">Report a Bug</a></p>
+    </div>
+
+    <script>
+        let challenge_arr = [];
+        let reward_arr = [
+            {name: 'divine', regex: 'ne or', amount:[]},
+            {name:'exalted', regex: 'exa', amount:[]},
+            {name: 'chaos', regex: 'os o', amount: []},
+            {name: 'gcp', regex: 'tter\'', amount: []},
+            {name: 'vaal', regex: 'aal o', amount: []},
+            {name: 'ancient', regex: 'nt or', amount:[]},
+            {name: 'annul', regex: 'annu', amount:[]},
+            {name: 'unmaking', regex: 'unm', amount:[]},
+
+            {name: 'fusing', regex: 'usin', amount: []},
+            {name: 'regret', regex: 'b of r', amount: []},
+            {name: 'regal', regex: 'regal', amount: []},
+            {name: 'stacked', regex: 'ked d', amount: []},
+            {name: 'blessed', regex: 'ssed', amount: []},
+            {name: 'scour', regex: 'couri', amount: []},
+            {name: 'chisel', regex: 'chis', amount: []},
+
+            {name: 'harbinger', regex: 'harb', amount: []},
+            {name: 'horizons', regex: 'izo', amount: []},
+            {name: 'sacred', regex: 'cred', amount: []}
+        ]
+        let modifier_arr = [];
+
+        function setRegex() {
+            let temp = "";
+
+            if(challenge_arr.length > 0) {
+                temp += "\"";
+                for(let i = 0; i < challenge_arr.length; ++i) {
+                    temp += challenge_arr[i] + "|"
+                }
+                temp = temp.substring(0, temp.length-1) + "\"";
+            }
+
+            let temp_reward = ""
+            reward_arr.forEach(reward => {
+                if(reward.amount.length > 0) {
+                    temp_reward += reward.regex
+                    if(reward.amount.indexOf('-1') >= 0) {
+                        temp_reward += "|";
+                    }
+                    else {
+                        temp_reward += ".*"
+                        if(reward.amount.length > 1) {
+                            temp_reward += "["
+                            let temp_reward2 = ""
+                            reward.amount.forEach(amt => {
+                                temp_reward2 += amt
+                            })
+                            temp_reward += temp_reward2 + "]|"
+                        }
+                        else {
+                            temp_reward += reward.amount[0] + '|'
+                        }
+                    }
+                }
+            })
+            if(temp_reward.length > 0) {
+                temp = temp + "\"" + temp_reward.substring(0, temp_reward.length-1) + "\""
+            }
+
+            if(modifier_arr.length > 0) {
+                temp += "\"!(";
+                for(let i = 0; i < modifier_arr.length; ++i) {
+                    temp += modifier_arr[i] + "|"
+                }
+                temp = temp.substring(0, temp.length-1) + ")\"";
+            }
+            document.getElementById('output-regex').textContent = "Output Regex: " + temp;
+            document.getElementById('clipboard-notification').textContent = "";
+        }
+
+        function regexToClipboard() {
+            if(modifier_arr.length+challenge_arr.length+reward_arr.length > 0 ) {
+                const temp_out =  document.getElementById('output-regex').textContent;
+                navigator.clipboard.writeText(temp_out.substring(14, temp_out.length));
+                document.getElementById('clipboard-notification').textContent = "Successfully copied to clipboard!"
+            }
+            else {
+                document.getElementById('clipboard-notification').textContent = "No patterns selected"
+            }
+        }
+
+        function toggleModButton(button, regex_str) {
+            if(button.classList.toggle('active')) {
+                modifier_arr.push(regex_str);
+            }
+            else {
+                modifier_arr = modifier_arr.filter((regex) => regex !== regex_str);
+            }
+            setRegex();
+        }
+
+        function toggleChallengeButton(button, regex_str) {
+            if(button.classList.toggle('active')) {
+                challenge_arr.push(regex_str);
+            }
+            else {
+                challenge_arr = challenge_arr.filter((regex) => regex !== regex_str);
+            }
+            setRegex();
+        }
+
+        function toggleRewardsButton(button, amt) {
+            if(button.classList.toggle('active')) {
+                reward_arr.find(x => x.name === button.parentElement.id)['amount'].push(button.dataset.amount);
+            }
+            else {
+                // reward_arr.find(x => x.name === button.parentElement.id)['amount'] = reward_arr.find(x => x.name === button.parentElement.id)['amount'].filter((x) => x !== amt && x !== -1);
+                button.parentElement.lastElementChild.classList.remove('active');
+                const siblings = Array.from(button.parentElement.querySelectorAll('.toggle-button-rewards'));
+                let temp_amounts = []
+                siblings.forEach(sibling => {
+                    if(sibling.classList.contains('active') && sibling.dataset.amount !== '-1') {
+                        temp_amounts.push(sibling.dataset.amount)
+                    }
+                })
+                reward_arr.find(x => x.name === button.parentElement.id)['amount'] = temp_amounts
+            }
+            setRegex();
+        }
+
+        function toggleRewardsRowButton(button) {
+            const siblings = button.parentElement.querySelectorAll('.toggle-button-rewards');
+            if(button.classList.toggle('active')) {
+                reward_arr.find(x => x.name === button.parentElement.id)['amount'] = ['-1'];
+                siblings.forEach(sibling => {
+                    sibling.classList.add('active');
+                })
+            }
+            else {
+                reward_arr.find(x => x.name === button.parentElement.id)['amount'] = [];
+                siblings.forEach(sibling => {
+                    sibling.classList.remove('active');
+                })
+            }
+            setRegex();
+        }
+
+        function resetModifierBlock() {
+            const toggles = document.querySelectorAll('.toggle-button-mods');
+            toggles.forEach(button => {
+                button.classList.remove('active');
+            });
+            modifier_arr = [];
+            setRegex();
+        }
+
+        function resetChallengeBlock() {
+            const toggles = document.querySelectorAll('.toggle-button-challenges');
+            toggles.forEach(button => {
+                button.classList.remove('active');
+            });
+            challenge_arr = [];
+            setRegex();
+        }
+
+        function resetRewardsBlock() {
+            const toggles = document.querySelectorAll('.toggle-button-rewards');
+            toggles.forEach(button => {
+                button.classList.remove('active');
+            });
+            reward_arr.forEach(reward => reward.dataset.amount = [])
+            setRegex();
+        }
+
+        function resetAll() {
+            const toggles = document.querySelectorAll('.toggle-button-mods, .toggle-button-challenges, .toggle-button-rewards');
+            toggles.forEach(button => {
+                button.classList.remove('active');
+            });
+            challenge_arr =[];
+            reward_arr.forEach(reward => reward.dataset.amount = []);
+            modifier_arr = [];
+            setRegex();
+        }
+    </script>
+
+</body>
+</html>
