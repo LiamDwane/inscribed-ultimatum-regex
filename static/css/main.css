@@ -27,7 +27,7 @@ label {
 }
 
 .copy-button {
-    border:none; background-color: #2d323d; width: 12.5%; height: 60px; margin-top:3px; float: left;
+    border:none; background-color: #2d323d; width: 12.5%; height: 60px; margin-top:0px; float: left;
     font-size: 18px; color: #f5f6fa; cursor: pointer;
 }
 
@@ -40,7 +40,7 @@ label {
 }
 
 .reset-all-button {
-    border:none; background-color: #2d323d; width: 12.5%; height: 60px; margin-top: 3px; float: left;
+    border:none; background-color: #2d323d; width: 12.5%; height: 60px; margin-top: 0px; float: left;
     font-size: 18px; color: coral; cursor: pointer;
 }
 
