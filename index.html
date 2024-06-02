@@ -502,7 +502,7 @@
             toggles.forEach(button => {
                 button.classList.remove('active');
             });
-            reward_arr.forEach(reward => reward.dataset.amount = [])
+            reward_arr.forEach(reward => reward.amount = [])
             setRegex();
         }
 
@@ -512,7 +512,7 @@
                 button.classList.remove('active');
             });
             challenge_arr =[];
-            reward_arr.forEach(reward => reward.dataset.amount = []);
+            reward_arr.forEach(reward => reward.amount = []);
             modifier_arr = [];
             setRegex();
         }
