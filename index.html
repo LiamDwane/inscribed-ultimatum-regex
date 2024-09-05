@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="static/css/main.css">
+    <link rel="stylesheet" href="/static/css/main.css">
     <title>Inscribed Ultimatum Regex</title>
 </head>
 <body>
@@ -24,6 +24,9 @@
             Reset All
         </button>
     </div>
+    <h4 style="margin: 12px 36px 0 36px; text-align: center" id="clipboard-notification2">
+        
+    </h4>
     <h4 style="margin: 12px 36px 0 36px; text-align: center" id="clipboard-notification">
         
     </h4>
@@ -362,6 +365,7 @@
             {name: 'sacred', regex: 'cred', amount: []}
         ]
         let modifier_arr = [];
+        let outputLabel = "Output Regex: ";
 
         function setRegex() {
             let temp = "";
@@ -408,18 +412,25 @@
                 }
                 temp = temp.substring(0, temp.length-1) + ")\"";
             }
-            document.getElementById('output-regex').textContent = "Output Regex: " + temp;
+            document.getElementById('output-regex').textContent = outputLabel + temp;
             document.getElementById('clipboard-notification').textContent = "";
         }
 
         function regexToClipboard() {
-            if(modifier_arr.length+challenge_arr.length+reward_arr.length > 0 ) {
-                const temp_out =  document.getElementById('output-regex').textContent;
-                navigator.clipboard.writeText(temp_out.substring(14, temp_out.length));
-                document.getElementById('clipboard-notification').textContent = "Successfully copied to clipboard!"
+            const temp_out = document.getElementById('output-regex').textContent;
+            if(temp_out.length > 50+outputLabel.length) {
+                navigator.clipboard.writeText(temp_out.substring(outputLabel.length, temp_out.length));
+                document.getElementById('clipboard-notification').textContent = "String of length " + (temp_out.length-outputLabel.length).toString() + " exceeds the 50 character search limit."
+                document.getElementById('clipboard-notification').style.color = "#C0392B";
+            }
+            else if(modifier_arr.length+challenge_arr.length+reward_arr.filter((x) => x.amount.length >0).length > 0 ) {
+                navigator.clipboard.writeText(temp_out.substring(outputLabel.length, temp_out.length));
+                document.getElementById('clipboard-notification').innerHTML = "Successfully copied to clipboard!<br />Length: " + (temp_out.length-outputLabel.length).toString() + " characters";
+                document.getElementById('clipboard-notification').style.color = "#f5f6fa";
             }
             else {
                 document.getElementById('clipboard-notification').textContent = "No patterns selected"
+                document.getElementById('clipboard-notification').style.color = "#f5f6fa";
             }
         }
 
@@ -448,7 +459,6 @@
                 reward_arr.find(x => x.name === button.parentElement.id)['amount'].push(button.dataset.amount);
             }
             else {
-                // reward_arr.find(x => x.name === button.parentElement.id)['amount'] = reward_arr.find(x => x.name === button.parentElement.id)['amount'].filter((x) => x !== amt && x !== -1);
                 button.parentElement.lastElementChild.classList.remove('active');
                 const siblings = Array.from(button.parentElement.querySelectorAll('.toggle-button-rewards'));
                 let temp_amounts = []
@@ -511,7 +521,7 @@
             toggles.forEach(button => {
                 button.classList.remove('active');
             });
-            challenge_arr =[];
+            challenge_arr = [];
             reward_arr.forEach(reward => reward.amount = []);
             modifier_arr = [];
             setRegex();
