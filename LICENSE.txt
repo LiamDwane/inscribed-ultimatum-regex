@@ -1,3 +1,8 @@
+# THIS LICENSE APPLIES ONLY TO THE SOURCE CODE IN THIS REPOSITORY.
+# The images in /static/images are property of Grinding Gear Games
+# and are not licensed under the GNU General Public License.
+__________________________________________________________________
+
 Inscribed Ultimatum Search String Regular Expression Generator
 Copyright (C) 2024 Liam Dwane
 
@@ -13,3 +18,4 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
